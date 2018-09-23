@@ -6,7 +6,11 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## 2.2.0 - 2018-09-23
 
+### Added
 - Laravel 5.7 support
+
+### Fixed
+- Behavior with empty email from user social provider
 
 ## 2.1.0 - 2018-06-01
 
