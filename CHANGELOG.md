@@ -4,11 +4,17 @@ All Notable changes to `laravel-social-auth` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-# 2.1.0 - 2018-06-01
+## 2.2.0 - 2018-09-23
+
+- Laravel 5.7 support
+
+## 2.1.0 - 2018-06-01
+
 - Laravel 5.6 support
 - CI configs updated
 
-# 2.0.1 - 2018-06-01
+## 2.0.1 - 2018-06-01
+
 - Fix bug with non-existent expiresIn property for `Laravel\Socialite\One\User`
 
 ## 2.0.0 - 2017-08-16
