@@ -17,13 +17,13 @@ This package give ability to
 _*For Laravel <= 5.4*_ - Via Composer
 
 ``` bash
-$ composer require mad-web/social-auth:^1.0
+$ composer require mad-web/laravel-social-auth:^1.0
 ```
 
 Via Composer
 
 ``` bash
-$ composer require mad-web/social-auth
+$ composer require mad-web/laravel-social-auth
 ```
 
 _*For Laravel <= 5.4*_ - Now add the service provider in config/app.php file:
@@ -146,40 +146,40 @@ $ php artisan vendor:publish --provider="MadWeb\SocialAuth\SocialAuthServiceProv
 
 ##### Add credetials to your project
 
-File .env
-```ini
-FB_ID = <FacebookID>
-FB_SECRET = <FacebookSecret>
-FB_REDIRECT = <your.domain>/social/facebook/callback
+Add providers to `config/services.php`
+```php
+'facebook' => [
+    'client_id' => env('FB_ID'),
+    'client_secret' => env('FB_SECRET'),
+    'redirect' => env('FB_REDIRECT'),
+],
 
-GOOGLE_ID = <GoogleID>
-GOOGLE_SECRET = <GoogleSecret>
-GOOGLE_REDIRECT = <your.domain>/social/google/callback
+'google' => [
+    'client_id' => env('GOOGLE_ID'),
+    'client_secret' => env('GOOGLE_SECRET'),
+    'redirect' => env('GOOGLE_REDIRECT'),
+],
 
-GITHUB_ID = <GithubID>
-GITHUB_SECRET = <GithubSecret>
-GITHUB_REDIRECT = <your.domain>/social/github/callback
+'github' => [
+    'client_id' => env('GITHUB_ID'),
+    'client_secret' => env('GITHUB_SECRET'),
+    'redirect' => env('GITHUB_REDIRECT'),
+]
 ```
 
-File config/services.php
-```php
-    'facebook' => [
-        'client_id'     => env('FB_ID'),
-        'client_secret' => env('FB_SECRET'),
-        'redirect'      => env('FB_REDIRECT')
-    ],
+Add credantials to `.env`
+```ini
+FB_ID=
+FB_SECRET=
+FB_REDIRECT=https://app.domain/social/facebook/callback
 
-    'google' => [
-        'client_id'     => env('GOOGLE_ID'),
-        'client_secret' => env('GOOGLE_SECRET'),
-        'redirect'      => env('GOOGLE_REDIRECT')
-    ],
-    
-    'github' => [
-        'client_id'     => env('GITHUB_ID'),
-        'client_secret' => env('GITHUB_SECRET'),
-        'redirect'      => env('GITHUB_REDIRECT')
-    ]
+GOOGLE_ID=
+GOOGLE_SECRET=
+GOOGLE_REDIRECT=https://app.domain/social/google/callback
+
+GITHUB_ID=
+GITHUB_SECRET=
+GITHUB_REDIRECT=https://app.domain/social/github/callback
 ```
 
 After that, create your social providers in the database
