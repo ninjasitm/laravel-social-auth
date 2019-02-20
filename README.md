@@ -10,23 +10,28 @@
 This package give ability to 
  * Sign In 
  * Sign Up
- * Attach/Detach social network provider to the existing account
+ * Attach/Detach social network provider to an existing account
+ 
+This package based on [laravel/socialite](https://laravel.com/docs/5.7/socialite) and provide an easy ability
+of usage a lot of additional providers from [Socialite Providers](https://socialiteproviders.netlify.com/).
 
 ## Install
 
-_*For Laravel <= 5.4*_ - Via Composer
-
-``` bash
-$ composer require mad-web/laravel-social-auth:^1.0
-```
-
-Via Composer
+Via Composer:
 
 ``` bash
 $ composer require mad-web/laravel-social-auth
 ```
 
-_*For Laravel <= 5.4*_ - Now add the service provider in config/app.php file:
+If you use _**Laravel <= 5.4**_
+Choose `^1.0` version:
+
+``` bash
+$ composer require mad-web/laravel-social-auth:^1.0
+```
+
+and add the service provider in config/app.php file:
+
 ```php
 'providers' => [
     // ...
@@ -34,25 +39,27 @@ _*For Laravel <= 5.4*_ - Now add the service provider in config/app.php file:
 ];
 ```
 
-You can publish the migration with:
+Next, publish the migration with:
+
 ```bash
 $ php artisan vendor:publish --provider="MadWeb\SocialAuth\SocialAuthServiceProvider" --tag="migrations"
 ```
 
 The package assumes that your users table name is called "users". If this is not the case you should manually edit the published migration to use your custom table name.
 
-After the migration has been published you can create the social_providers table for storing supported 
-providers and user_has_social_provider pivot table by running the migrations:
+After the migration has been published you can create the `social_providers` table for storing supported 
+providers and `user_has_social_provider` pivot table for attaching providers to users by running migrations:
+
 ```bash
 $ php artisan migrate
 ```
 
-You can publish the config-file with:
+You can publish the config file with:
 ```bash
 $ php artisan vendor:publish --provider="MadWeb\SocialAuth\SocialAuthServiceProvider" --tag="config"
 ```
 
-This is the contents of the published config/social-auth.php config file:
+This is the contents of the published `config/social-auth.php` config file:
 
 ```php
 return [
@@ -146,7 +153,7 @@ $ php artisan vendor:publish --provider="MadWeb\SocialAuth\SocialAuthServiceProv
 
 ##### Add credetials to your project
 
-Add providers to `config/services.php`
+Add providers to `config/services.php`:
 ```php
 'facebook' => [
     'client_id' => env('FB_ID'),
@@ -167,7 +174,7 @@ Add providers to `config/services.php`
 ]
 ```
 
-Add credantials to `.env`
+Add credantials to `.env`:
 ```ini
 FB_ID=
 FB_SECRET=
@@ -182,19 +189,23 @@ GITHUB_SECRET=
 GITHUB_REDIRECT=https://app.domain/social/github/callback
 ```
 
-After that, create your social providers in the database
+After that, create your social providers in the database.
 
-Using console command
+Using console command:
+
 ```bash
 php artisan social-auth:add google --label=Google+
 ```
-Or creating models for example in seeder
+
+By model, for example in seeder:
+
 ```php
 SocialProvider::create(['slug' => 'google', 'label' => 'Google+']);
 ```
-Or add rows directly
+Or add records directly.
 
-You can add additional scopes and parameters to the social auth request
+You can add additional scopes and parameters to the social auth request:
+
 ```php
 SocialProvider::create([
     'label' => 'github',
@@ -203,7 +214,9 @@ SocialProvider::create([
     'parameters' => ['foo' => 'bar']
 ]);
 ```
-To override default scopes
+
+To override default scopes:
+
 ```php
 $SocialProvider->setScopes(['foo', 'bar'], true);
 ```
@@ -216,9 +229,7 @@ $SocialProvider->setScopes(['foo', 'bar'], true);
 
 ##### Prepare your user model
 
-Implement SocialAuthenticatable interface
-
-Add UserSocialite trait to your User model
+Implement `SocialAuthenticatable` interface and add `UserSocialite` trait to your User model:
 
 ```php
 namespace App\Models;
@@ -233,28 +244,78 @@ class User extends Model implements SocialAuthenticatable
    ...
 }
 ```
-##### Routes
+
+## Additional Providers
+
+To use any of additional providers from [socialiteproviders.netlify.com](https://socialiteproviders.netlify.com), at first install it:
+
+```bash
+composer require socialiteproviders/instagram
+```
+
+next, add an event listener from guide to the `social-auth` config file:
+
+```php
+/*
+|--------------------------------------------------------------------------
+| Additional service providers
+|--------------------------------------------------------------------------
+|
+| The social providers listed here will enable support for additional social
+| providers which provided by https://socialiteproviders.netlify.com just
+| add new event listener from the installation guide
+|
+*/
+'providers' => [
+    SocialiteProviders\Instagram\InstagramExtendSocialite::class,
+],
+...
+```
+
+## Customization
+
+### Routes
 
 If you need do some custom with social flow, you should define yourself controllers and 
 put your custom url into routes file.
 
-For example 
+For example:
+
 ```php
 Route::get('social/{social}', 'Auth\SocialAuthController@getAccount');
 Route::get('social/{social}/callback', 'Auth\SocialAuthController@callback');
 Route::get('social/{social}/detach', 'Auth\SocialAuthController@detachAccount');
 ```
 
-In case if you no need any special functionality ypu can use our default controllers
+In case if you no need any special functionality ypu can use our default controllers.
 
-##### Customize for your project
+### Custom User Model
 
-###### Custom User Model
-User model we takes from the config('social-auth.models.user');
+User model we takes from the `social-auth.models.user`.
 
-###### User Fields Mapping
-SocialAuthenticatable interface contains method ```mapSocialData``` for mapping social fields for user model
-If you need you can redefine this method for your preferences project in your UserModel 
+### User Properties Mapping
+`SocialAuthenticatable` interface contains method `mapSocialData` for mapping social fields for user model.
+If you need customize a data mapping, you can override this method for your preferences project in the `User` model.
+
+Default mapping method:
+
+```php
+public function mapSocialData(User $socialUser)
+{
+    $raw = $socialUser->getRaw();
+    $name = $socialUser->getName() ?? $socialUser->getNickname();
+    $name = $name ?? $socialUser->getEmail();
+
+    $result = [
+        $this->getEmailField() => $socialUser->getEmail(),
+        'name' => $name,
+        'verified' => $raw['verified'] ?? true,
+        'avatar' => $socialUser->getAvatar(),
+    ];
+
+    return $result;
+}
+```
 
 ## Change log
 

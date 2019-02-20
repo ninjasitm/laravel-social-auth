@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | The social providers listed here will enable support for additional social
-    | providers which provided by https://socialiteproviders.github.io/ just
+    | providers which provided by https://socialiteproviders.netlify.com just
     | add new event listener from the installation guide
     |
     */
