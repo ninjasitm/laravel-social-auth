@@ -25,7 +25,7 @@ abstract class TestCase extends OrchestraTestCase
      */
     protected $socialiteMock;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

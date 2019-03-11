@@ -4,6 +4,10 @@ All Notable changes to `laravel-social-auth` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## 2.3.0 - 2019-03-11
+
+Laravel 5.8 support
+
 ## 2.2.0 - 2018-09-23
 
 ### Added

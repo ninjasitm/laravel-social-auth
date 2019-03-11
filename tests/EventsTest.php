@@ -15,7 +15,7 @@ class EventsTest extends TestCase
 {
     protected $testEmail = 'some.mail@mail.com';
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
