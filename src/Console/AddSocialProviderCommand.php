@@ -43,7 +43,7 @@ class AddSocialProviderCommand extends Command
 
         if ($params = $this->option('params')) {
             foreach ($params as $idx => $param) {
-                list($key, $value) = explode(':', $param);
+                [$key, $value] = explode(':', $param);
                 unset($params[$idx]);
                 $params[$key] = $value;
             }
