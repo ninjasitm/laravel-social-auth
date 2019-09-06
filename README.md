@@ -23,13 +23,6 @@ Via Composer:
 $ composer require mad-web/laravel-social-auth
 ```
 
-If you use _**Laravel <= 5.4**_
-Choose `^1.0` version:
-
-``` bash
-$ composer require mad-web/laravel-social-auth:^1.0
-```
-
 and add the service provider in config/app.php file:
 
 ```php
