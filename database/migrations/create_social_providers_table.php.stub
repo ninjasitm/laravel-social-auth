@@ -35,7 +35,7 @@ class CreateSocialProvidersTable extends Migration
         Schema::create(
             $table_names['user_has_social_provider'],
             function (Blueprint $table) use ($userTable, $table_names, $foreign_keys) {
-                $table->integer($foreign_keys['users'])->unsigned();
+                $table->bigInteger($foreign_keys['users'])->unsigned();
                 $table->integer('social_provider_id')->unsigned();
                 $table->string('token');
                 $table->string($foreign_keys['socials']);
