@@ -4,8 +4,8 @@ namespace MadWeb\SocialAuth\Test;
 
 use DateInterval;
 use Illuminate\Support\Facades\Event;
-use MadWeb\SocialAuth\Models\SocialProvider;
 use MadWeb\SocialAuth\Exceptions\SocialGetUserInfoException;
+use MadWeb\SocialAuth\Models\SocialProvider;
 
 class SocialAuthTest extends TestCase
 {

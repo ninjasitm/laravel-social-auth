@@ -3,8 +3,8 @@
 namespace MadWeb\SocialAuth;
 
 use Illuminate\Support\ServiceProvider;
-use MadWeb\SocialAuth\Console\CacheRefreshCommand;
 use MadWeb\SocialAuth\Console\AddSocialProviderCommand;
+use MadWeb\SocialAuth\Console\CacheRefreshCommand;
 
 class SocialAuthServiceProvider extends ServiceProvider
 {

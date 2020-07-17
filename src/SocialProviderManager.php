@@ -2,12 +2,12 @@
 
 namespace MadWeb\SocialAuth;
 
-use MadWeb\SocialAuth\Models\SocialProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
-use MadWeb\SocialAuth\Events\SocialUserCreated;
-use MadWeb\SocialAuth\Events\SocialUserAttached;
 use Laravel\Socialite\Contracts\User as SocialUser;
 use MadWeb\SocialAuth\Contracts\SocialAuthenticatable;
+use MadWeb\SocialAuth\Events\SocialUserAttached;
+use MadWeb\SocialAuth\Events\SocialUserCreated;
+use MadWeb\SocialAuth\Models\SocialProvider;
 
 class SocialProviderManager
 {

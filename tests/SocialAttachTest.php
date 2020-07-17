@@ -49,7 +49,7 @@ class SocialAttachTest extends TestCase
             $Errors->first(),
             trans(
                 'social-auth::messages.detach_error',
-                    ['social' => $Social->label]
+                ['social' => $Social->label]
             )
         );
     }

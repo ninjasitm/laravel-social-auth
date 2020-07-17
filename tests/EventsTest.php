@@ -2,14 +2,14 @@
 
 namespace MadWeb\SocialAuth\Test;
 
-use Mockery;
 use Illuminate\Support\Facades\Event;
+use MadWeb\SocialAuth\Events\SocialUserAttached;
+use MadWeb\SocialAuth\Events\SocialUserAuthenticated;
+use MadWeb\SocialAuth\Events\SocialUserCreated;
+use MadWeb\SocialAuth\Events\SocialUserDetached;
 use MadWeb\SocialAuth\Models\SocialProvider;
 use MadWeb\SocialAuth\SocialProviderManager;
-use MadWeb\SocialAuth\Events\SocialUserCreated;
-use MadWeb\SocialAuth\Events\SocialUserAttached;
-use MadWeb\SocialAuth\Events\SocialUserDetached;
-use MadWeb\SocialAuth\Events\SocialUserAuthenticated;
+use Mockery;
 
 class EventsTest extends TestCase
 {

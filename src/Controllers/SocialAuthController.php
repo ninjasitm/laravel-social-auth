@@ -3,22 +3,22 @@
 namespace MadWeb\SocialAuth\Controllers;
 
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-use MadWeb\SocialAuth\Models\SocialProvider;
-use MadWeb\SocialAuth\SocialProviderManager;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Auth\RedirectsUsers;
-use MadWeb\SocialAuth\Events\SocialUserDetached;
-use Laravel\Socialite\Contracts\User as SocialUser;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Laravel\Socialite\Contracts\Factory as Socialite;
+use Laravel\Socialite\Contracts\User as SocialUser;
 use MadWeb\SocialAuth\Events\SocialUserAuthenticated;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use MadWeb\SocialAuth\Exceptions\SocialUserAttachException;
+use MadWeb\SocialAuth\Events\SocialUserDetached;
 use MadWeb\SocialAuth\Exceptions\SocialGetUserInfoException;
+use MadWeb\SocialAuth\Exceptions\SocialUserAttachException;
+use MadWeb\SocialAuth\Models\SocialProvider;
+use MadWeb\SocialAuth\SocialProviderManager;
 
 /**
  * Class SocialAuthController.

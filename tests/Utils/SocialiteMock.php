@@ -2,9 +2,9 @@
 
 namespace MadWeb\SocialAuth\Test\Utils;
 
-use Mockery;
 use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Contracts\Factory as Socialite;
+use Mockery;
 
 class SocialiteMock
 {

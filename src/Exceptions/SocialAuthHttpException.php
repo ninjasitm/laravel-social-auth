@@ -3,8 +3,8 @@
 namespace MadWeb\SocialAuth\Exceptions;
 
 use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\Response;
 
 class SocialAuthHttpException extends HttpResponseException
 {

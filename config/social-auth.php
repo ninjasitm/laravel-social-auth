@@ -32,15 +32,15 @@ return [
 
     'table_names' => [
 
-       /*
-       |--------------------------------------------------------------------------
-       | Users Table
-       |--------------------------------------------------------------------------
-       |
-       | The table for storing relation between users and social providers. Also there is
-       | a place for saving "user social network id", "token", "expiresIn" if it exist
-       |
-       */
+        /*
+        |--------------------------------------------------------------------------
+        | Users Table
+        |--------------------------------------------------------------------------
+        |
+        | The table for storing relation between users and social providers. Also there is
+        | a place for saving "user social network id", "token", "expiresIn" if it exist
+        |
+        */
         'user_has_social_provider' => 'user_has_social_provider',
 
         /*

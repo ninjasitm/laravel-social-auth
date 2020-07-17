@@ -2,9 +2,9 @@
 
 namespace MadWeb\SocialAuth\Test;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Schema\Blueprint;
 use MadWeb\SocialAuth\Test\Utils\SocialiteMock;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use MadWeb\SocialAuth\Test\Utils\TestExceptionHandler;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 

@@ -3,8 +3,8 @@
 namespace MadWeb\SocialAuth\Console;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class AddSocialProviderCommand extends Command
 {
