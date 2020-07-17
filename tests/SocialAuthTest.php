@@ -3,6 +3,7 @@
 namespace MadWeb\SocialAuth\Test;
 
 use DateInterval;
+use Illuminate\Support\Facades\Event;
 use MadWeb\SocialAuth\Models\SocialProvider;
 use MadWeb\SocialAuth\Exceptions\SocialGetUserInfoException;
 
@@ -21,6 +22,8 @@ class SocialAuthTest extends TestCase
 
     public function test_register_with_expires_in()
     {
+        Event::fake();
+
         $this->socialiteMock->withExpiresIn()->create();
 
         $this->get(route('social.callback', $this->social));
