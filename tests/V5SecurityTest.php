@@ -703,6 +703,15 @@ class V5SecurityTest extends TestCase
         ];
     }
 
+    public function test_redirect_validation_cache_store_add_is_atomic(): void
+    {
+        $store = new RedirectValidationCacheStore;
+
+        $this->assertTrue($store->add('state', 'first', 60));
+        $this->assertFalse($store->add('state', 'second', 60));
+        $this->assertSame('first', $store->get('state'));
+    }
+
     /**
      * @dataProvider invalidStateConfigurations
      */
@@ -936,6 +945,10 @@ class RedirectValidationCacheStore extends ArrayStore
     {
         $this->addCalls++;
 
-        return parent::add($key, $value, $seconds);
+        if ($this->get($key) !== null) {
+            return false;
+        }
+
+        return $this->put($key, $value, $seconds);
     }
 }
