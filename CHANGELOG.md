@@ -6,6 +6,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## Unreleased
 
+- Project and release metadata now points to the canonical
+  `ninjasitm/laravel-social-auth` repository.
 - Hardened v5 callbacks: linked subjects bypass email verification, while
   unmatched callbacks require a strictly-true configured email verifier;
   ambiguous or failed races fail closed without exposing provider details.
