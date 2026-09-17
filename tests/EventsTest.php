@@ -26,9 +26,9 @@ class EventsTest extends TestCase
     {
         $this->socialiteMock->setEmail($this->testEmail)->create();
 
-        $this->expectsEvents(SocialUserCreated::class);
-
         $this->get(route('social.callback', $this->social));
+
+        Event::assertDispatched(SocialUserCreated::class);
     }
 
     public function test_social_user_attach()
@@ -40,9 +40,9 @@ class EventsTest extends TestCase
         $SocialUser->expiresIn = 5000;
         $SocialUser->shouldReceive('getId')->andReturn('random-id');
 
-        $this->expectsEvents(SocialUserAttached::class);
-
         $Manager->attach($this->getTestUser(), $SocialUser);
+
+        Event::assertDispatched(SocialUserAttached::class);
     }
 
     public function test_social_user_authenticated()
@@ -59,9 +59,9 @@ class EventsTest extends TestCase
             ]
         );
 
-        $this->expectsEvents(SocialUserAuthenticated::class);
-
         $this->get(route('social.callback', $this->social));
+
+        Event::assertDispatched(SocialUserAuthenticated::class);
     }
 
     public function test_social_user_detach()
@@ -78,8 +78,8 @@ class EventsTest extends TestCase
             ]
         );
 
-        $this->expectsEvents(SocialUserDetached::class);
-
         $this->actingAs($User)->get(route('social.detach', $this->social));
+
+        Event::assertDispatched(SocialUserDetached::class);
     }
 }

@@ -17,6 +17,10 @@ of usage a lot of additional providers from [Socialite Providers](https://social
 
 ## Install
 
+Version 5 supports PHP 8.4 and Laravel 11–13. Laravel 11 is end-of-life and
+has unresolved upstream security advisories; audited deployments should use
+Laravel 12.61.1 or later, or Laravel 13.12.0 or later.
+
 Via Composer:
 
 ``` bash
@@ -56,6 +60,9 @@ This is the contents of the published `config/social-auth.php` config file:
 
 ```php
 return [
+
+    // Set false when your application owns the social authentication routes.
+    'routes' => true,
 
     /*
     |--------------------------------------------------------------------------

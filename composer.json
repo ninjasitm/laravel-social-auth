@@ -22,19 +22,20 @@
         }
     ],
     "require": {
-        "php": "^7.2.5|^8.0|^8.1|^8.2",
-        "illuminate/broadcasting": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "illuminate/database": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "illuminate/events": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "illuminate/routing": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "illuminate/support": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "laravel/ui": "^1.0 || ^2.0 || ^3.0",
+        "php": "^8.4",
+        "illuminate/broadcasting": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/database": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/events": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/routing": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/support": "^11.0 || ^12.0 || ^13.0",
+        "laravel/ui": "^4.6",
         "socialiteproviders/manager": "^4.0"
     },
     "require-dev": {
-        "mockery/mockery": "^1.3",
-        "phpunit/phpunit": "^8.0 || ^9.3",
-        "orchestra/testbench": "^4.0 || ^5.0 || ^6.0"
+        "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+        "mockery/mockery": "^1.6",
+        "phpunit/phpunit": "^11.5.50",
+        "orchestra/testbench": "^9.0 || ^10.0 || ^11.0"
     },
     "autoload": {
         "psr-4": {
