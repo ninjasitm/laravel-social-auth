@@ -80,7 +80,7 @@ class SocialAuthServiceProvider extends ServiceProvider
             $resource_folder.'/lang' => resource_path('lang/vendor/social-auth'),
         ], 'lang');
 
-        if (config('social-auth.routes')) {
+        if (config('social-auth.routes', true)) {
             $this->loadRoutesFrom(__DIR__.'/../routes/routes.php');
         }
     }

@@ -2,6 +2,7 @@ name: tests
 
 on:
   push:
+    branches: [master]
   pull_request:
 
 jobs:
@@ -27,6 +28,18 @@ jobs:
         with:
           php-version: '8.4'
           tools: composer:v2
-      - run: composer update --prefer-dist --no-interaction --with laravel/framework:${{ matrix.framework }} --with orchestra/testbench:${{ matrix.testbench }}
+      - name: Install Laravel 11 dependencies (advisory reporting only)
+        if: matrix.laravel == '11'
+        run: composer update --prefer-dist --no-interaction --no-security-blocking --with laravel/framework:${{ matrix.framework }} --with orchestra/testbench:${{ matrix.testbench }}
+      - name: Install Laravel 12/13 dependencies
+        if: matrix.laravel != '11'
+        run: composer update --prefer-dist --no-interaction --with laravel/framework:${{ matrix.framework }} --with orchestra/testbench:${{ matrix.testbench }}
       - run: composer validate --strict
       - run: composer test
+      - name: Report Laravel 11 dependency advisories (non-gating)
+        if: matrix.laravel == '11'
+        continue-on-error: true
+        run: composer audit --locked
+      - name: Audit Laravel 12/13 dependencies
+        if: matrix.laravel != '11'
+        run: composer audit --locked
