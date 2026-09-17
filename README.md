@@ -88,18 +88,23 @@ the existing `social.detach` URI, and `GET` never detaches an account.
 
 Fresh installs include the named `social_auth_provider_subject_unique` schema
 invariant (unique provider/subject index).
+This index covers full 255-character subject values. MySQL/MariaDB installations
+must support full utf8mb4 255-character composite indexes, including large index
+support and DYNAMIC row format where required. Migrations fail rather than
+truncating provider identifiers.
 The application must also enforce a unique database constraint on the configured
 user email field. The package locks matching rows where supported, but cannot
 make a no-row first-create race atomic for arbitrary consumer schemas; mutation
 failures roll back and fail closed rather than auto-linking an uncertain winner.
 For existing installations, audit duplicates and resolve ownership manually,
-then publish the upgrade with:
+then publish and run the v5 migration during write quiescence:
 
 ```bash
 php artisan vendor:publish --provider="MadWeb\SocialAuth\SocialAuthServiceProvider" --tag="social-auth-v5-migrations"
+php artisan migrate
 ```
 
-The upgrade never deletes or reassigns duplicate rows and should be run during
+The upgrade never deletes or reassigns duplicate rows. It must be run during
 write quiescence.
 
 You can publish the config file with:

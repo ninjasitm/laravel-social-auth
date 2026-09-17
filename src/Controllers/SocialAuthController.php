@@ -167,46 +167,46 @@ class SocialAuthController extends BaseController
                 return $clearCookie === null ? $response : $response->withCookie($clearCookie);
             }
 
-        $redirect_path = $this->redirectPath();
-        $User = $request->user();
+            $redirect_path = $this->redirectPath();
+            $User = $request->user();
 
-        // if user already attached
-        if ($User->isAttached($social->slug)) {
-            throw new SocialUserAttachException(
-                redirect($redirect_path)
-                    ->withErrors(trans('social-auth::messages.user_already_attach', ['social' => $social->label])),
-                $social
-            );
-        }
+            // if user already attached
+            if ($User->isAttached($social->slug)) {
+                throw new SocialUserAttachException(
+                    redirect($redirect_path)
+                        ->withErrors(trans('social-auth::messages.user_already_attach', ['social' => $social->label])),
+                    $social
+                );
+            }
 
-        //If someone already attached current socialProvider account
-        $subjectMatches = $this->manager->socialUserQuery($subject)->get();
-        $matches = $subjectMatches->count();
-        if ($matches > 1) {
-            throw $this->genericFailure($social);
-        }
-        if ($matches === 1) {
-            if (! $this->subjectsMatchExactly($subjectMatches, $subject)) {
+            //If someone already attached current socialProvider account
+            $subjectMatches = $this->manager->socialUserQuery($subject)->get();
+            $matches = $subjectMatches->count();
+            if ($matches > 1) {
                 throw $this->genericFailure($social);
             }
-            throw new SocialUserAttachException(
-                redirect($redirect_path)
-                    ->withErrors(trans('social-auth::messages.someone_already_attach')),
-                $social
-            );
-        }
+            if ($matches === 1) {
+                if (! $this->subjectsMatchExactly($subjectMatches, $subject)) {
+                    throw $this->genericFailure($social);
+                }
+                throw new SocialUserAttachException(
+                    redirect($redirect_path)
+                        ->withErrors(trans('social-auth::messages.someone_already_attach')),
+                    $social
+                );
+            }
 
-        try {
-            DB::transaction(fn () => $this->manager->attach($User, $SocialUser, false, $subject));
-        } catch (Throwable $e) {
-            throw $this->genericFailure($social);
-        }
+            try {
+                DB::transaction(fn () => $this->manager->attach($User, $SocialUser, false, $subject));
+            } catch (Throwable $e) {
+                throw $this->genericFailure($social);
+            }
 
-        event(new SocialUserAttached($User, $social, $SocialUser));
+            event(new SocialUserAttached($User, $social, $SocialUser));
 
-        $response = redirect($redirect_path);
+            $response = redirect($redirect_path);
 
-        return $clearCookie === null ? $response : $response->withCookie($clearCookie);
+            return $clearCookie === null ? $response : $response->withCookie($clearCookie);
         } catch (Throwable $exception) {
             if ($clearCookie !== null) {
                 if ($exception instanceof SocialAuthHttpException) {

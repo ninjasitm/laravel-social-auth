@@ -15,8 +15,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 - Consumers must enforce a unique constraint on their configured user email
   field. The package rolls back and fails closed on duplicate-key races; it
   does not auto-link an uncertain winner. Existing installations must audit and
-  resolve provider duplicates manually, then publish `social-auth-v5-migrations`
-  during write quiescence.
+  resolve provider duplicates manually, then publish and run the
+  `social-auth-v5-migrations` migration during write quiescence.
 - `stateless=true` browser routes now use encrypted, single-use, ten-minute
   state bound to a Secure host-only cookie and a shared lock-capable cache.
   Stateless callbacks cannot bypass browser/session binding; use
@@ -27,6 +27,10 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
   requires a fresh flow.
 - Provider subjects are opaque and preserved exactly. Strings are not trimmed
   or normalized; integers are converted to canonical decimal strings.
+- The provider/subject unique index requires MySQL/MariaDB full utf8mb4
+  255-character composite-index support, including large index support and
+  DYNAMIC row format where required. Migrations fail rather than truncate
+  provider identifiers.
 
 ## 3.2.0 - 2020-12-09
 

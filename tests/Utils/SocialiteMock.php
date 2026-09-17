@@ -39,6 +39,8 @@ class SocialiteMock
 
     protected $redirect_url = 'https://facebook.com/oauth';
 
+    protected $last_redirect_url = null;
+
     protected $forced_redirect_url = null;
 
     protected $parameters = [];
@@ -76,6 +78,7 @@ class SocialiteMock
     {
         $this->calls = ['driver' => 0, 'user' => 0, 'stateless' => 0, 'redirect' => 0];
         $this->parameters = [];
+        $this->last_redirect_url = null;
         $user = Mockery::mock(\Laravel\Socialite\Two\User::class);
 
         $user->token = $token;
@@ -108,6 +111,7 @@ class SocialiteMock
             ->shouldReceive('redirect')
             ->andReturnUsing(function () {
                 $this->calls['redirect']++;
+                $this->last_redirect_url = $this->redirect_url;
 
                 return new RedirectResponse($this->redirect_url);
             });
@@ -188,8 +192,14 @@ class SocialiteMock
     public function withRedirectUrl(string $url)
     {
         $this->forced_redirect_url = $url;
+        $this->redirect_url = $url;
 
         return $this;
+    }
+
+    public function redirectUrl(): ?string
+    {
+        return $this->last_redirect_url;
     }
 
     public function calls(): array

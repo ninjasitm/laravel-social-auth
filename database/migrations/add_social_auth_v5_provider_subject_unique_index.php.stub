@@ -23,6 +23,10 @@ return new class extends Migration
             throw new RuntimeException('Cannot add the social auth provider subject invariant because its index name is already in use.');
         }
 
+        if (! Schema::hasColumn($table, $subject)) {
+            throw new RuntimeException("Configured social auth subject column [{$subject}] does not exist on table [{$table}]; check the social-auth.foreign_keys.social_subject configuration.");
+        }
+
         $duplicate = DB::table($table)
             ->select($provider, $subject)
             ->groupBy($provider, $subject)

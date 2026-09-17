@@ -2,6 +2,9 @@
 
 namespace MadWeb\SocialAuth\Test;
 
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Cache\CacheManager;
+use Illuminate\Cache\Repository;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Cache;
@@ -12,6 +15,8 @@ use MadWeb\SocialAuth\Contracts\VerifiedEmailVerifier;
 use MadWeb\SocialAuth\Events\SocialUserAuthenticated;
 use MadWeb\SocialAuth\Events\SocialUserAttached;
 use MadWeb\SocialAuth\Models\SocialProvider;
+use MadWeb\SocialAuth\StatelessOAuthState;
+use Mockery;
 use RuntimeException;
 
 class V5SecurityTest extends TestCase
@@ -672,13 +677,19 @@ class V5SecurityTest extends TestCase
     public function test_invalid_provider_state_target_fails_before_cache_write(string $target): void
     {
         $social = $this->statelessProvider();
+        $store = new RedirectValidationCacheStore;
+        $cache = Mockery::mock(CacheManager::class);
+        $cache->shouldReceive('store')->with(null)->once()->andReturn(new Repository($store));
+        $this->app->instance(StatelessOAuthState::class, new StatelessOAuthState($cache));
         $this->socialiteMock->withRedirectUrl($target);
 
         $response = $this->get(route('social.auth', ['social' => $social->slug]));
 
         $this->assertGenericFailure($response);
+        $this->assertSame($target, $this->socialiteMock->redirectUrl());
         $state = $this->socialiteMock->parameters()['state'];
         $payload = json_decode(Crypt::decryptString($state), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame(0, $store->addCalls);
         $this->assertFalse(Cache::has('social-auth:state:'.$payload['nonce']));
     }
 
@@ -914,5 +925,17 @@ class ThrowingResolver
     public function __construct()
     {
         throw new RuntimeException('must not leak resolver details');
+    }
+}
+
+class RedirectValidationCacheStore extends ArrayStore
+{
+    public int $addCalls = 0;
+
+    public function add($key, $value, $seconds): bool
+    {
+        $this->addCalls++;
+
+        return parent::add($key, $value, $seconds);
     }
 }

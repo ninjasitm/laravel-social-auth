@@ -72,6 +72,25 @@ class MigrationTest extends TestCase
         }
     }
 
+    public function test_upgrade_rejects_a_missing_configured_subject_column(): void
+    {
+        Schema::create('missing_subject_pivot', function (Blueprint $blueprint): void {
+            $blueprint->unsignedBigInteger('user_id');
+            $blueprint->unsignedInteger('social_provider_id');
+            $blueprint->string('token');
+        });
+        $migration = $this->upgradeMigration('missing_subject_pivot', 'provider_subject');
+
+        try {
+            $migration->up();
+            $this->fail('Expected the migration to reject the missing subject column.');
+        } catch (RuntimeException $exception) {
+            $this->assertStringContainsString('missing_subject_pivot', $exception->getMessage());
+            $this->assertStringContainsString('provider_subject', $exception->getMessage());
+            $this->assertStringContainsString('social-auth.foreign_keys.social_subject', $exception->getMessage());
+        }
+    }
+
     public function test_upgrade_down_removes_only_named_index(): void
     {
         $this->createUpgradeTable('rollback_pivot', 'provider_subject');
