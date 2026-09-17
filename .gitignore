@@ -1,4 +1,5 @@
 build
+.phpunit.cache
 composer.lock
 docs
 vendor

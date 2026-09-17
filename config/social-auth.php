@@ -4,6 +4,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Package Routes
+    |--------------------------------------------------------------------------
+    |
+    | Disable this when the application defines its own social authentication
+    | routes. It is enabled by default for backwards compatibility.
+    |
+    */
+    'routes' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Additional service providers
     |--------------------------------------------------------------------------
     |
