@@ -6,10 +6,23 @@ use DateInterval;
 use Illuminate\Support\Facades\Event;
 use MadWeb\SocialAuth\Exceptions\SocialGetUserInfoException;
 use MadWeb\SocialAuth\Models\SocialProvider;
+use MadWeb\SocialAuth\Contracts\VerifiedEmailVerifier;
+use Laravel\Socialite\Contracts\User as SocialUser;
 
 class SocialAuthTest extends TestCase
 {
     protected $testEmail = 'test.user@test.com';
+
+    public function test_unmatched_callback_requires_a_strictly_true_verifier_result()
+    {
+        config(['social-auth.verified_email_verifier' => StrictFalseVerifier::class]);
+
+        $this->socialiteMock->setEmail($this->testEmail)->create();
+        $this->get(route('social.callback', $this->social));
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => $this->testEmail]);
+    }
 
     public function test_register_via_social_network()
     {
@@ -79,5 +92,13 @@ class SocialAuthTest extends TestCase
         $this->get(route('social.callback', $this->social));
 
         $this->assertSame($this->app['auth']->id(), $User->getKey());
+    }
+}
+
+class StrictFalseVerifier implements VerifiedEmailVerifier
+{
+    public function isVerified(SocialUser $user, SocialProvider $provider, string $email): mixed
+    {
+        return 'true';
     }
 }

@@ -13,6 +13,20 @@ return [
     */
     'routes' => true,
 
+    // Nullable class-string implementing VerifiedEmailVerifier.
+    'verified_email_verifier' => null,
+
+    /*
+     * Stateless web OAuth uses encrypted, single-use state, a shared
+     * lock-capable cache, and a Secure host-only cookie. The default lifetime
+     * is ten minutes; cookie_secure=false is for local HTTP development only.
+     */
+    'stateless_state' => [
+        'ttl' => 600,
+        'store' => null,
+        'cookie_secure' => true,
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Additional service providers
@@ -76,6 +90,10 @@ return [
          * The name of the foreign key to the socials table
          */
         'socials' => 'social_id',
+
+        /* The social account subject column on the pivot. */
+        'social_subject' => 'social_id',
+
     ],
 
     /*

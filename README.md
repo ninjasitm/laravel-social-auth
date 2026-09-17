@@ -51,6 +51,62 @@ providers and `user_has_social_provider` pivot table for attaching providers to 
 $ php artisan migrate
 ```
 
+### Version 5 security
+
+The package browser routes use stateful Socialite sessions by default. Providers
+with `stateless=true` use the package's bound, encrypted, single-use OAuth state
+flow; they are not an unauthenticated stateless shortcut. The flow requires a
+shared lock-capable cache, HTTPS by default, a ten-minute browser binding, and
+restart after replay or provider failure. Set `stateless=false` for the normal
+session/state flow when using these routes. Applications needing API/stateless
+OAuth must implement separate independently authenticated and CSRF-bound custom
+routes/controllers and use this service or an equivalent design; PKCE does not
+replace the browser binding. Twitter/X-style providers whose final URL cannot
+preserve one query `state` value fail closed and may need a future adapter.
+Keep `cookie_secure=true` in deployed HTTPS environments; only local HTTP
+development should set it to `false`. A consumed state cannot be replayed.
+
+Configure `social-auth.verified_email_verifier` with a container-resolvable
+class implementing `MadWeb\SocialAuth\Contracts\VerifiedEmailVerifier`:
+
+```php
+public function isVerified(SocialUser $user, SocialProvider $provider, string $email): mixed
+{
+    return true; // only boolean true permits an unclaimed callback
+}
+```
+
+Provider subjects are opaque identifiers: non-empty strings, including leading,
+trailing, and all-whitespace values, are preserved byte-for-byte; integers are
+stored as their canonical decimal strings. They are never trimmed or otherwise
+normalized. An already-linked provider subject signs in without email checks. An
+authenticated user may attach an unclaimed subject without the verifier;
+unmatched callbacks require a syntactically valid email and the verifier.
+Ambiguous historical subjects/emails fail closed. The built-in routes remain
+enabled by default; detach is an authenticated, CSRF-protected `DELETE` at
+the existing `social.detach` URI, and `GET` never detaches an account.
+
+Fresh installs include the named `social_auth_provider_subject_unique` schema
+invariant (unique provider/subject index).
+This index covers full 255-character subject values. MySQL/MariaDB installations
+must support full utf8mb4 255-character composite indexes, including large index
+support and DYNAMIC row format where required. Migrations fail rather than
+truncating provider identifiers.
+The application must also enforce a unique database constraint on the configured
+user email field. The package locks matching rows where supported, but cannot
+make a no-row first-create race atomic for arbitrary consumer schemas; mutation
+failures roll back and fail closed rather than auto-linking an uncertain winner.
+For existing installations, audit duplicates and resolve ownership manually,
+then publish and run the v5 migration during write quiescence:
+
+```bash
+php artisan vendor:publish --provider="MadWeb\SocialAuth\SocialAuthServiceProvider" --tag="social-auth-v5-migrations"
+php artisan migrate
+```
+
+The upgrade never deletes or reassigns duplicate rows. It must be run during
+write quiescence.
+
 You can publish the config file with:
 ```bash
 $ php artisan vendor:publish --provider="MadWeb\SocialAuth\SocialAuthServiceProvider" --tag="config"
@@ -63,6 +119,16 @@ return [
 
     // Set false when your application owns the social authentication routes.
     'routes' => true,
+
+    // Required for unmatched callbacks; null rejects them by default.
+    'verified_email_verifier' => null,
+
+    // Stateless web OAuth state; store must be shared and lock-capable.
+    'stateless_state' => [
+        'ttl' => 600,
+        'store' => null,
+        'cookie_secure' => true,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -126,7 +192,10 @@ return [
         /*
          * The name of the foreign key to the socials table
          */
-        'socials' => 'social_id'
+        'socials' => 'social_id',
+
+        // The provider subject column on the pivot.
+        'social_subject' => 'social_id'
     ],
 
     /*

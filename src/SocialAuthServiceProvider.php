@@ -43,6 +43,7 @@ class SocialAuthServiceProvider extends ServiceProvider
 
         $this->app->singleton('command.social-auth.refresh', CacheRefreshCommand::class);
         $this->app->singleton('command.social-auth.add', AddSocialProviderCommand::class);
+        $this->app->singleton(StatelessOAuthState::class);
 
         $this->commands(['command.social-auth.refresh', 'command.social-auth.add']);
     }
@@ -65,6 +66,11 @@ class SocialAuthServiceProvider extends ServiceProvider
                 __DIR__.'/../database/migrations/create_social_providers_table.php.stub' => $this->app->databasePath().'/migrations/'.$timestamp.'_create_social_providers_table.php',
             ], 'migrations');
         }
+
+        $this->publishes([
+            __DIR__.'/../database/migrations/add_social_auth_v5_provider_subject_unique_index.php.stub' =>
+                $this->app->databasePath().'/migrations/'.date('Y_m_d_His', time()).'_add_social_auth_v5_provider_subject_unique_index.php',
+        ], 'social-auth-v5-migrations');
 
         // Views
         $this->loadViewsFrom($resource_folder.'/views', 'social-auth');

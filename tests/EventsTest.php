@@ -78,7 +78,7 @@ class EventsTest extends TestCase
             ]
         );
 
-        $this->actingAs($User)->get(route('social.detach', $this->social));
+        $this->actingAs($User)->delete(route('social.detach', $this->social));
 
         Event::assertDispatched(SocialUserDetached::class);
     }

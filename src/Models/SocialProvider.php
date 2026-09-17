@@ -86,9 +86,16 @@ class SocialProvider extends Model
      */
     public function users()
     {
+        $subjectKey = config('social-auth.foreign_keys.social_subject', 'social_id');
+        if ($subjectKey === 'social_id') {
+            $subjectKey = config('social-auth.foreign_keys.socials', $subjectKey);
+        }
+
         return $this->belongsToMany(
             config('social-auth.models.user'),
-            config('social-auth.table_names.user_has_social_provider')
-        );
+            config('social-auth.table_names.user_has_social_provider'),
+            'social_provider_id',
+            config('social-auth.foreign_keys.users')
+        )->withPivot($subjectKey, 'token', 'expires_in');
     }
 }
