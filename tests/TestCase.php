@@ -30,6 +30,7 @@ abstract class TestCase extends OrchestraTestCase
         parent::setUp();
 
         config(['social-auth.models.user' => User::class]);
+        config(['social-auth.verified_email_verifier' => ApprovedVerifier::class]);
         $this->setUpDatabase($this->app);
 
         $this->socialiteMock = new SocialiteMock($this->app, $this->userEmail);
@@ -68,6 +69,7 @@ abstract class TestCase extends OrchestraTestCase
             'database' => ':memory:',
             'prefix' => '',
         ]);
+        $app['router']->get('login', fn () => redirect('/'))->name('login');
     }
 
     /**
@@ -79,7 +81,7 @@ abstract class TestCase extends OrchestraTestCase
     {
         $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('email');
+            $table->string('email')->unique();
             $table->string('avatar');
         });
         include_once __DIR__.'/../database/migrations/create_social_providers_table.php.stub';
@@ -100,5 +102,13 @@ abstract class TestCase extends OrchestraTestCase
         }
 
         $this->withoutExceptionHandling();
+    }
+}
+
+class ApprovedVerifier implements \MadWeb\SocialAuth\Contracts\VerifiedEmailVerifier
+{
+    public function isVerified(\Laravel\Socialite\Contracts\User $user, \MadWeb\SocialAuth\Models\SocialProvider $provider, string $email): mixed
+    {
+        return true;
     }
 }

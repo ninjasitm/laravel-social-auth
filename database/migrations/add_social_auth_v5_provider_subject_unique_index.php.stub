@@ -1,0 +1,58 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $table = config('social-auth.table_names.user_has_social_provider');
+        $subject = config('social-auth.foreign_keys.social_subject', 'social_id');
+        if ($subject === 'social_id') {
+            $subject = config('social-auth.foreign_keys.socials', $subject);
+        }
+        $provider = 'social_provider_id';
+
+        if (Schema::hasIndex($table, 'social_auth_provider_subject_unique', 'unique')) {
+            return;
+        }
+
+        if (Schema::hasIndex($table, 'social_auth_provider_subject_unique')) {
+            throw new RuntimeException('Cannot add the social auth provider subject invariant because its index name is already in use.');
+        }
+
+        $duplicate = DB::table($table)
+            ->select($provider, $subject)
+            ->groupBy($provider, $subject)
+            ->havingRaw('COUNT(*) > 1')
+            ->exists();
+
+        if ($duplicate) {
+            throw new RuntimeException('Cannot add the social auth provider subject invariant while duplicates exist.');
+        }
+
+        Schema::table($table, function ($blueprint) use ($subject, $provider) {
+            $blueprint->unique(
+                [$provider, $subject],
+                'social_auth_provider_subject_unique'
+            );
+        });
+    }
+
+    public function down(): void
+    {
+        $table = config('social-auth.table_names.user_has_social_provider');
+        if (! Schema::hasIndex($table, 'social_auth_provider_subject_unique', 'unique')) {
+            return;
+        }
+
+        Schema::table(
+            $table,
+            function ($blueprint) {
+                $blueprint->dropUnique('social_auth_provider_subject_unique');
+            }
+        );
+    }
+};

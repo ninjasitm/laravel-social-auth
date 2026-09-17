@@ -17,7 +17,17 @@ trait UserSocialite
     {
         $social_pivot_table_name = config('social-auth.table_names.user_has_social_provider');
 
-        return $this->belongsToMany(SocialProvider::class, $social_pivot_table_name);
+        $subjectKey = config('social-auth.foreign_keys.social_subject', 'social_id');
+        if ($subjectKey === 'social_id') {
+            $subjectKey = config('social-auth.foreign_keys.socials', $subjectKey);
+        }
+
+        return $this->belongsToMany(
+            SocialProvider::class,
+            $social_pivot_table_name,
+            config('social-auth.foreign_keys.users'),
+            'social_provider_id'
+        )->withPivot($subjectKey, 'token', 'expires_in');
     }
 
     /**
@@ -41,7 +51,11 @@ trait UserSocialite
      */
     public function attachSocial($social, string $socialId, string $token, int $expiresIn = null)
     {
-        $data = ['social_id' => $socialId, 'token' => $token];
+        $subjectKey = config('social-auth.foreign_keys.social_subject', 'social_id');
+        if ($subjectKey === 'social_id') {
+            $subjectKey = config('social-auth.foreign_keys.socials', $subjectKey);
+        }
+        $data = [$subjectKey => $socialId, 'token' => $token];
 
         $expiresIn = $expiresIn
             ? date_create('now')

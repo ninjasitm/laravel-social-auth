@@ -29,7 +29,7 @@ class SocialAttachTest extends TestCase
             ]
         );
 
-        $this->actingAs($User)->get(route('social.detach', $this->social));
+        $this->actingAs($User)->delete(route('social.detach', $this->social));
 
         $this->assertTrue(! $User->socials()->whereSlug($this->social['social'])->exists());
     }
@@ -40,7 +40,7 @@ class SocialAttachTest extends TestCase
 
         $User = $this->getTestUser();
 
-        $this->actingAs($User)->get(route('social.detach', $this->social));
+        $this->actingAs($User)->delete(route('social.detach', $this->social));
 
         $Errors = $this->app['session.store']->get('errors');
 
@@ -72,7 +72,7 @@ class SocialAttachTest extends TestCase
             ]
         );
 
-        $this->actingAs($User)->get(route('social.detach', $this->social));
+        $this->actingAs($User)->delete(route('social.detach', $this->social));
 
         $Errors = $this->app['session.store']->get('errors');
 

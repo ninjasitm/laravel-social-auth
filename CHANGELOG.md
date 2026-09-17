@@ -4,6 +4,30 @@ All Notable changes to `laravel-social-auth` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## Unreleased
+
+- Hardened v5 callbacks: linked subjects bypass email verification, while
+  unmatched callbacks require a strictly-true configured email verifier;
+  ambiguous or failed races fail closed without exposing provider details.
+- Detach now uses authenticated, CSRF-protected `DELETE` routes.
+- Added the named provider-subject unique constraint and an explicit upgrade
+  migration with duplicate preflight; no duplicate rows are silently cleaned up.
+- Consumers must enforce a unique constraint on their configured user email
+  field. The package rolls back and fails closed on duplicate-key races; it
+  does not auto-link an uncertain winner. Existing installations must audit and
+  resolve provider duplicates manually, then publish `social-auth-v5-migrations`
+  during write quiescence.
+- `stateless=true` browser routes now use encrypted, single-use, ten-minute
+  state bound to a Secure host-only cookie and a shared lock-capable cache.
+  Stateless callbacks cannot bypass browser/session binding; use
+  `stateless=false` with session/state support, or build a separate
+  independently authenticated and CSRF-bound API OAuth flow. Providers must
+  preserve exactly one query `state` value; incompatible redirect formats fail
+  closed. PKCE does not replace the browser binding; replay or provider failure
+  requires a fresh flow.
+- Provider subjects are opaque and preserved exactly. Strings are not trimmed
+  or normalized; integers are converted to canonical decimal strings.
+
 ## 3.2.0 - 2020-12-09
 
 Upgraded socialiteproviders/manager to 4.x version

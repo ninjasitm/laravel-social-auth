@@ -10,5 +10,6 @@ class RoutesTest extends TestCase
         $this->assertSame('social/{social}', app('router')->getRoutes()->getByName('social.auth')->uri());
         $this->assertSame('social/{social}/callback', app('router')->getRoutes()->getByName('social.callback')->uri());
         $this->assertSame('social/{social}/detach', app('router')->getRoutes()->getByName('social.detach')->uri());
+        $this->assertContains('DELETE', app('router')->getRoutes()->getByName('social.detach')->methods());
     }
 }

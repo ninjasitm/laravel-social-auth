@@ -31,7 +31,12 @@ class SocialProviderManager
      */
     public function socialUserQuery(string $key)
     {
-        return $this->social->users()->wherePivot(config('social-auth.foreign_keys.socials'), $key);
+        $subjectKey = config('social-auth.foreign_keys.social_subject', 'social_id');
+        if ($subjectKey === 'social_id') {
+            $subjectKey = config('social-auth.foreign_keys.socials', $subjectKey);
+        }
+
+        return $this->social->users()->wherePivot($subjectKey, $key);
     }
 
     /**
@@ -42,23 +47,32 @@ class SocialProviderManager
      */
     public function getUserByKey(string $key)
     {
-        return $this->socialUserQuery($key)->first();
+        $matches = $this->socialUserQuery($key)->get();
+
+        return $matches->count() === 1 ? $matches->first() : null;
     }
 
     /**
      * @param SocialAuthenticatable $user
      * @param SocialUser $socialUser
      */
-    public function attach(SocialAuthenticatable $user, SocialUser $socialUser)
+    public function attach(
+        SocialAuthenticatable $user,
+        SocialUser $socialUser,
+        bool $dispatchEvent = true,
+        ?string $subject = null
+    )
     {
         $user->attachSocial(
             $this->social,
-            $socialUser->getId(),
+            $subject ?? $socialUser->getId(),
             $socialUser->token,
             $socialUser->expiresIn ?? null
         );
 
-        event(new SocialUserAttached($user, $this->social, $socialUser));
+        if ($dispatchEvent) {
+            event(new SocialUserAttached($user, $this->social, $socialUser));
+        }
     }
 
     /**
@@ -72,20 +86,27 @@ class SocialProviderManager
     public function createNewUser(
         Authenticatable $userModel,
         SocialProvider $social,
-        SocialUser $socialUser
+        SocialUser $socialUser,
+        bool $dispatchEvent = true,
+        ?string $email = null,
+        ?string $subject = null
     ): Authenticatable {
-        $NewUser = $userModel->create(
-            $userModel->mapSocialData($socialUser)
-        );
+        $data = $userModel->mapSocialData($socialUser);
+        if ($email !== null) {
+            $data[$userModel->getEmailField()] = $email;
+        }
+        $NewUser = $userModel->create($data);
 
         $NewUser->attachSocial(
             $social,
-            $socialUser->getId(),
+            $subject ?? $socialUser->getId(),
             $socialUser->token,
             $socialUser->expiresIn ?? null
         );
 
-        event(new SocialUserCreated($NewUser));
+        if ($dispatchEvent) {
+            event(new SocialUserCreated($NewUser));
+        }
 
         return $NewUser;
     }

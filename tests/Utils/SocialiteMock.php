@@ -13,6 +13,8 @@ class SocialiteMock
      */
     protected $request_exception = false;
 
+    protected $request_exception_message = '';
+
     /**
      * @var bool
      */
@@ -32,6 +34,14 @@ class SocialiteMock
      * @var string
      */
     protected $email;
+
+    protected $calls = ['driver' => 0, 'user' => 0, 'stateless' => 0, 'redirect' => 0];
+
+    protected $redirect_url = 'https://facebook.com/oauth';
+
+    protected $forced_redirect_url = null;
+
+    protected $parameters = [];
 
     /**
      * SocialiteMock constructor.
@@ -64,6 +74,8 @@ class SocialiteMock
      */
     public function create($token = 'random-token', $id = 'random-id')
     {
+        $this->calls = ['driver' => 0, 'user' => 0, 'stateless' => 0, 'redirect' => 0];
+        $this->parameters = [];
         $user = Mockery::mock(\Laravel\Socialite\Two\User::class);
 
         $user->token = $token;
@@ -79,27 +91,52 @@ class SocialiteMock
 
         $provider = Mockery::mock(\Laravel\Socialite\Two\FacebookProvider::class);
 
-        $expectation = $provider
-            ->shouldReceive('user');
-        if ($this->request_exception) {
-            $expectation
-                ->andThrow(\Exception::class);
-        } elseif ($this->null_user) {
-            $expectation
-                ->andReturn(null);
-        } else {
-            $expectation
-                ->andReturn($user);
-        }
+        $expectation = $provider->shouldReceive('user')->andReturnUsing(function () use ($user) {
+            $this->calls['user']++;
+
+            if ($this->request_exception) {
+                throw new \Exception($this->request_exception_message);
+            }
+            if ($this->null_user) {
+                return null;
+            }
+
+            return $user;
+        });
 
         $provider
             ->shouldReceive('redirect')
-            ->andReturn(new RedirectResponse('https://facebook.com/oauth'));
+            ->andReturnUsing(function () {
+                $this->calls['redirect']++;
+
+                return new RedirectResponse($this->redirect_url);
+            });
+        $provider
+            ->shouldReceive('with')
+            ->andReturnUsing(function (array $parameters) use ($provider) {
+                $this->parameters = $parameters;
+                if ($this->forced_redirect_url === null) {
+                    $this->redirect_url = 'https://facebook.com/oauth?'.http_build_query($parameters);
+                }
+
+                return $provider;
+            });
+        $provider
+            ->shouldReceive('stateless')
+            ->andReturnUsing(function () use ($provider) {
+                $this->calls['stateless']++;
+
+                return $provider;
+            });
 
         $service = Mockery::mock(\Laravel\Socialite\SocialiteManager::class);
         $service
             ->shouldReceive('driver')
-            ->andReturn($provider);
+            ->andReturnUsing(function () use ($provider) {
+                $this->calls['driver']++;
+
+                return $provider;
+            });
 
         $this->app->instance(Socialite::class, $service);
 
@@ -109,9 +146,10 @@ class SocialiteMock
     /**
      * @return $this
      */
-    public function withRequestException()
+    public function withRequestException(string $message = '')
     {
         $this->request_exception = true;
+        $this->request_exception_message = $message;
 
         return $this;
     }
@@ -145,5 +183,22 @@ class SocialiteMock
         $this->email = $email;
 
         return $this;
+    }
+
+    public function withRedirectUrl(string $url)
+    {
+        $this->forced_redirect_url = $url;
+
+        return $this;
+    }
+
+    public function calls(): array
+    {
+        return $this->calls;
+    }
+
+    public function parameters(): array
+    {
+        return $this->parameters;
     }
 }
