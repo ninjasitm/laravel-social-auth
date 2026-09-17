@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
-[![Build Status][ico-travis]][link-travis]
+[![Build Status][ico-tests]][link-tests]
 [![StyleCI][ico-style]][link-style]
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
@@ -415,13 +415,13 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 
 [ico-version]: https://poser.pugx.org/mad-web/laravel-social-auth/v/stable.svg?format=flat-square
 [ico-license]: https://poser.pugx.org/mad-web/laravel-social-auth/license?format=flat-square
-[ico-travis]: https://img.shields.io/travis/mad-web/laravel-social-auth/master.svg?style=flat-square
+[ico-tests]: https://github.com/ninjasitm/laravel-social-auth/actions/workflows/tests.yml/badge.svg?branch=master
 [ico-style]: https://styleci.io/repos/135699653/shield
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/mad-web/laravel-social-auth.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/mad-web/laravel-social-auth.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/mad-web/laravel-social-auth
-[link-travis]: https://travis-ci.org/mad-web/laravel-social-auth
+[link-tests]: https://github.com/ninjasitm/laravel-social-auth/actions/workflows/tests.yml
 [link-style]: https://styleci.io/repos/135699653
 [link-code-quality]: https://scrutinizer-ci.com/g/mad-web/laravel-social-auth
 [link-downloads]: https://packagist.org/packages/mad-web/laravel-social-auth
